@@ -2,8 +2,11 @@ import { Link } from 'react-router-dom'
 import {
   Layers, ChevronRight, Sparkles, Wand2, GitMerge, ShieldCheck,
   Zap, FileText, BarChart2, BookOpen, CheckCircle, ArrowRight,
-  Globe, Lock, AlertTriangle, Clock
+  Globe, Lock, AlertTriangle, Clock, HelpCircle
 } from 'lucide-react'
+import { useTour } from '../hooks/useTour'
+import type { TourStep } from '../hooks/useTour'
+import { TourOverlay } from '../components/ui/TourOverlay'
 
 const LIFECYCLE = [
   { step: 1, color: 'from-violet-600 to-violet-400', label: 'Design', sub: 'Describe system goals', icon: Wand2 },
@@ -43,7 +46,61 @@ const ARTIFACTS_PREVIEW = [
   { type: 'arc42',        label: 'arc42 Pack',        color: 'bg-brand-500/10 text-brand-400' },
 ]
 
+const TOUR_STEPS: TourStep[] = [
+  {
+    target: '[data-tour="hero"]',
+    title: 'Welcome to ArchSmith',
+    content: 'ArchSmith is an AI-powered architecture design platform. Describe your system in plain English and get production-ready architectural artifacts in minutes.',
+    example: 'Click "Start in Studio" to launch the 6-step wizard. Try the Retail Banking template to see a complete architecture package generated instantly.',
+    proTip: 'ArchSmith aligns every output to arc42 standards and your PRD requirements (FR1-FR6) automatically.',
+  },
+  {
+    target: '[data-tour="problems"]',
+    title: 'The Problems We Solve',
+    content: 'Traditional architecture documentation is inconsistent, untraceable, and slow. Teams waste weeks creating artifacts that drift from reality.',
+    example: 'Think about your last project: did the API spec match the actual implementation? ArchSmith keeps all 8 artifact types in sync from a single source of truth.',
+    proTip: 'Impact Analysis catches breaking changes at design time, eliminating costly late-stage reworks.',
+  },
+  {
+    target: '[data-tour="lifecycle"]',
+    title: 'The 6-Step Studio Workflow',
+    content: 'The Studio wizard guides you through Design, Model, Generate, Analyse, Approve, and Publish. Each step builds on the previous one.',
+    example: 'In Step 1 (Design), describe "A real-time payment processing system with fraud detection." Claude AI will structure domains, services, and APIs for you in Step 2.',
+    proTip: 'You can skip straight to Step 3 (Generate) by selecting one of the 4 built-in templates: Retail Banking, E-Commerce, Healthcare, or Real-Time Analytics.',
+  },
+  {
+    target: '[data-tour="capabilities"]',
+    title: 'Platform Capabilities',
+    content: 'ArchSmith covers AI-powered suggestions, 8 artifact types, full traceability, impact analysis, multi-cloud Terraform, governance workflows, templates, and NFR scoring.',
+    example: 'Enable the Claude API key in Settings, then use "AI Architecture Suggest" in the Studio to auto-generate a complete domain model from a 2-sentence description.',
+    proTip: 'AI features use Claude Haiku for fast, cost-effective suggestions. Without an API key, the app works fully with manual input.',
+  },
+  {
+    target: '[data-tour="artifacts"]',
+    title: '8 Artifact Types Per Package',
+    content: 'Every architecture package generates Domain Models, C4 Diagrams, OpenAPI specs, AsyncAPI specs, Terraform blueprints, ADRs, Impact Baselines, and arc42 documentation.',
+    example: 'Create a package, then navigate to the Package Detail page to browse each artifact type. The C4 diagram shows system context, containers, and component views.',
+    proTip: 'All artifacts are cross-linked — changing a domain model automatically flags impacted OpenAPI endpoints and Terraform modules via Impact Analysis.',
+  },
+  {
+    target: '[data-tour="metrics"]',
+    title: 'Success Metrics & PRD Targets',
+    content: 'ArchSmith targets 40% reduction in documentation time, 60% faster ADR creation, 50% fewer late-stage reworks, and 80% NFR coverage.',
+    example: 'Check the Dashboard page to see your actual NFR coverage score across all packages. The Governance page shows approval cycle times.',
+    proTip: 'Use the Impact Analysis page to compare before/after metrics when evaluating architecture changes.',
+  },
+  {
+    target: '[data-tour="cta"]',
+    title: 'Get Started Now',
+    content: 'Open the Studio to create your first architecture package. Start from a template or describe your own system.',
+    example: 'Try the "Retail Banking Core" template first — it generates a complete package with payment services, account management, and fraud detection domains.',
+    proTip: 'Bookmark the Dashboard to track all your packages. Use the Packages page to compare architecture versions side by side.',
+  },
+]
+
 export default function Landing() {
+  const tour = useTour(TOUR_STEPS, 'landing')
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       {/* Nav */}
@@ -56,6 +113,13 @@ export default function Landing() {
           <span className="badge bg-brand-900/60 text-brand-400 border border-brand-700/40 text-[10px] ml-1">PRD-aligned</span>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={tour.isActive ? tour.finish : tour.start}
+            className="btn-ghost text-sm flex items-center gap-1.5"
+          >
+            <HelpCircle className="w-3.5 h-3.5" />
+            {tour.isActive ? 'Exit Tour' : 'Take a Tour'}
+          </button>
           <Link to="/dashboard" className="btn-ghost text-sm">Dashboard</Link>
           <Link to="/studio" className="btn-primary text-sm flex items-center gap-1.5">
             Open Studio <ChevronRight className="w-3.5 h-3.5" />
@@ -64,7 +128,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero */}
-      <section className="px-8 pt-24 pb-20 max-w-5xl mx-auto text-center">
+      <section data-tour="hero" className="px-8 pt-24 pb-20 max-w-5xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 badge bg-brand-900/40 border border-brand-700/40 text-brand-300 text-xs mb-6">
           <Sparkles className="w-3.5 h-3.5" />
           AI-Powered · PRD FR1–FR6 · arc42 Aligned
@@ -89,7 +153,7 @@ export default function Landing() {
       </section>
 
       {/* Problems */}
-      <section className="px-8 py-16 border-t border-slate-800/60">
+      <section data-tour="problems" className="px-8 py-16 border-t border-slate-800/60">
         <div className="max-w-5xl mx-auto">
           <p className="text-xs text-slate-600 uppercase tracking-widest font-medium mb-2 text-center">The Problem</p>
           <h2 className="text-2xl font-bold text-center mb-10">Why architecture docs fail</h2>
@@ -108,7 +172,7 @@ export default function Landing() {
       </section>
 
       {/* Lifecycle */}
-      <section className="px-8 py-16 bg-slate-900/40 border-t border-slate-800/60">
+      <section data-tour="lifecycle" className="px-8 py-16 bg-slate-900/40 border-t border-slate-800/60">
         <div className="max-w-5xl mx-auto">
           <p className="text-xs text-slate-600 uppercase tracking-widest font-medium mb-2 text-center">Workflow</p>
           <h2 className="text-2xl font-bold text-center mb-10">From description to approved artifact</h2>
@@ -132,7 +196,7 @@ export default function Landing() {
       </section>
 
       {/* Capabilities */}
-      <section className="px-8 py-16 border-t border-slate-800/60">
+      <section data-tour="capabilities" className="px-8 py-16 border-t border-slate-800/60">
         <div className="max-w-5xl mx-auto">
           <p className="text-xs text-slate-600 uppercase tracking-widest font-medium mb-2 text-center">Capabilities</p>
           <h2 className="text-2xl font-bold text-center mb-10">Everything the PRD requires</h2>
@@ -151,7 +215,7 @@ export default function Landing() {
       </section>
 
       {/* Artifacts */}
-      <section className="px-8 py-16 bg-slate-900/40 border-t border-slate-800/60">
+      <section data-tour="artifacts" className="px-8 py-16 bg-slate-900/40 border-t border-slate-800/60">
         <div className="max-w-5xl mx-auto">
           <p className="text-xs text-slate-600 uppercase tracking-widest font-medium mb-2 text-center">Output</p>
           <h2 className="text-2xl font-bold text-center mb-3">8 artifact types per package</h2>
@@ -168,7 +232,7 @@ export default function Landing() {
       </section>
 
       {/* Success Metrics */}
-      <section className="px-8 py-16 border-t border-slate-800/60">
+      <section data-tour="metrics" className="px-8 py-16 border-t border-slate-800/60">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs text-slate-600 uppercase tracking-widest font-medium mb-2 text-center">Success Metrics</p>
           <h2 className="text-2xl font-bold text-center mb-10">Measured against PRD targets</h2>
@@ -189,7 +253,7 @@ export default function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="px-8 py-20 border-t border-slate-800/60 text-center">
+      <section data-tour="cta" className="px-8 py-20 border-t border-slate-800/60 text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Ready to forge your architecture?</h2>
           <p className="text-slate-400 mb-8 text-sm leading-relaxed">
@@ -203,9 +267,29 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-800/60 px-8 py-6 text-center text-xs text-slate-700">
-        ArchSmith — Architecture Intelligence Platform · PRD-aligned · arc42 · FR1–FR6
+      <footer className="border-t border-slate-800/60 px-8 py-6 text-center text-xs text-slate-700 space-y-1">
+        <div>ArchSmith — Architecture Intelligence Platform · PRD-aligned · arc42 · FR1–FR6</div>
+        <div>
+          Developed by{' '}
+          <a href="https://my-solution-registry.satszone.link" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-500">
+            Sathish Siva Shankar
+          </a>
+          {' '}·{' '}
+          <a href="https://my-solution-registry.satszone.link" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-500">
+            View All Solutions
+          </a>
+        </div>
       </footer>
+
+      {/* Tour Overlay */}
+      <TourOverlay
+        step={tour.step}
+        currentStep={tour.currentStep}
+        totalSteps={tour.totalSteps}
+        onNext={tour.next}
+        onPrev={tour.prev}
+        onFinish={tour.finish}
+      />
     </div>
   )
 }
