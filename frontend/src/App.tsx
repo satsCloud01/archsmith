@@ -1,3 +1,4 @@
+import { ThemeProvider } from './context/ThemeContext'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Dashboard from './pages/Dashboard'
@@ -28,7 +29,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <ApiKeyProvider>
+    <ThemeProvider><ApiKeyProvider>
       <SettingsProvider>
         <BrowserRouter>
           <Routes>
@@ -44,6 +45,6 @@ export default function App() {
           </Routes>
         </BrowserRouter>
       </SettingsProvider>
-    </ApiKeyProvider>
+    </ApiKeyProvider></ThemeProvider>
   )
 }
